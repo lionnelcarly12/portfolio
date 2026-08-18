@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lionnel Carly Rajaonary — Développeur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151b;
+    --surface:#181c24;
+    --surface-2:#1f2430;
+    --border:#2a2f3b;
+    --accent:#c8f31d;
+    --accent-dim:#8fae1a;
+    --text:#edf0e6;
+    --text-muted:#8b93a1;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  ::selection{background:var(--accent);color:#12151b;}
+  a{color:inherit;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;width:100%;}
+
+  /* ---- top bar ---- */
+  header.topbar{
+    border-bottom:1px solid var(--border);
+    background:rgba(18,21,27,0.85);
+  }
+  .topbar .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-top:16px;padding-bottom:16px;
+  }
+  .prompt{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    color:var(--accent);
+  }
+  .prompt span.path{color:var(--text-muted);}
+
+  /* tab dots = page indicator, act like open terminal tabs */
+  .tabs{display:flex;gap:6px;}
+  .tab-dot{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    padding:6px 12px;border-radius:6px;
+    border:1px solid var(--border);color:var(--text-muted);
+    background:transparent;cursor:pointer;
+    transition:all .2s ease;
+  }
+  .tab-dot:hover{border-color:var(--accent-dim);color:var(--text);}
+  .tab-dot.active{background:var(--accent);color:#12151b;border-color:var(--accent);font-weight:600;}
+
+  /* ---- stage ---- */
+  main{flex:1;display:flex;align-items:center;padding:36px 0;}
+  .stage{width:100%;}
+  .terminal{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);
+  }
+  .terminal-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:12px 16px;
+    background:var(--surface-2);
+    border-bottom:1px solid var(--border);
+  }
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot.r{background:#ff5f56;}
+  .dot.y{background:#ffbd2e;}
+  .dot.g{background:#27c93f;}
+  .terminal-title{
+    margin-left:8px;font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--text-muted);
+  }
+  .terminal-body{padding:32px 32px 36px;min-height:420px;}
+
+  .term-line{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;color:var(--text-muted);
+    margin:0 0 22px;
+  }
+  .term-line .cmd{color:var(--accent);}
+  .cursor{
+    display:inline-block;width:8px;height:16px;background:var(--accent);
+    margin-left:4px;vertical-align:-3px;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .page{display:none;}
+  .page.active{display:block;animation:fadeIn .35s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* --- about page --- */
+  .hero-output{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;}
+  .avatar-frame{
+    flex:0 0 auto;width:118px;height:118px;border-radius:var(--radius);
+    overflow:hidden;border:1px solid var(--border);position:relative;
+  }
+  .avatar-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+  .hero-text h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(26px,4vw,36px);line-height:1.1;margin:0 0 8px;letter-spacing:-0.01em;
+  }
+  .hero-text h1 .surname{color:var(--accent);}
+  .role{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-muted);margin:0 0 14px;}
+  .role .tag{color:var(--accent-dim);}
+  .bio{max-width:56ch;color:#c7cdd7;font-size:15.5px;margin:0 0 18px;}
+
+  .kv{display:flex;flex-direction:column;gap:10px;font-family:'JetBrains Mono',monospace;font-size:13px;margin-top:20px;max-width:420px;}
+  .kv div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding-bottom:8px;}
+  .kv span.k{color:var(--text-muted);}
+  .kv span.v{color:var(--text);}
+
+  /* --- skills page --- */
+  .filetree{border:1px solid var(--border);border-radius:var(--radius);padding:8px;background:var(--surface-2);}
+  .file-row{
+    display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:7px;
+    font-family:'JetBrains Mono',monospace;font-size:13.5px;transition:background .15s ease;
+  }
+  .file-row:hover{background:rgba(255,255,255,0.03);}
+  .file-row .ext{
+    width:44px;flex:0 0 auto;text-align:center;font-size:11px;font-weight:600;
+    padding:4px 0;border-radius:5px;color:#12151b;
+  }
+  .file-row .fname{color:var(--text);flex:1 1 auto;}
+  .file-row .flabel{color:var(--text-muted);font-size:12px;}
+  .ext.html{background:#e34f26;} .ext.css{background:#2965f1;} .ext.js{background:#f0db4f;}
+  .ext.py{background:#4b8bbe;} .ext.java{background:#ea7625;} .ext.php{background:#8892be;}
+  .ext.node{background:#3fa845;} .ext.sql{background:var(--accent);}
+
+  /* --- project page --- */
+  .project-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:26px;}
+  .project-card .ptop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
+  .project-card h3{font-family:'Space Grotesk',sans-serif;font-size:20px;margin:0;}
+  .badge{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);
+    border:1px solid var(--accent-dim);padding:4px 10px;border-radius:20px;white-space:nowrap;
+  }
+  .project-card p{color:#c7cdd7;font-size:14.5px;margin:0 0 16px;}
+  .stack-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--surface);
+    border:1px solid var(--border);padding:5px 10px;border-radius:6px;color:var(--text-muted);
+  }
+
+  /* --- contact page --- */
+  .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .contact-card{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 20px;text-decoration:none;display:flex;flex-direction:column;gap:4px;
+    transition:border-color .2s ease, transform .15s ease;
+  }
+  .contact-card:hover{border-color:var(--accent-dim);transform:translateY(-2px);}
+  .contact-card .clabel{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-dim);text-transform:uppercase;letter-spacing:.06em;}
+  .contact-card .cval{font-size:14.5px;color:var(--text);word-break:break-word;}
+
+  .page-heading{font-family:'Space Grotesk',sans-serif;font-size:22px;margin:0 0 20px;font-weight:600;}
+
+  /* ---- nav controls ---- */
+  .controls{
+    display:flex;align-items:center;justify-content:space-between;
+    border-top:1px solid var(--border);padding:16px 32px;background:var(--surface-2);
+  }
+  .navbtn{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    padding:10px 18px;border-radius:8px;border:1px solid var(--border);
+    background:transparent;color:var(--text);cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:border-color .2s ease, transform .15s ease, opacity .2s ease;
+  }
+  .navbtn:hover:not(:disabled){border-color:var(--accent-dim);color:var(--accent);transform:translateY(-1px);}
+  .navbtn:disabled{opacity:0.3;cursor:not-allowed;}
+  .navbtn.next{background:var(--accent);color:#12151b;border-color:var(--accent);font-weight:600;}
+  .navbtn.next:hover:not(:disabled){transform:translateY(-1px);}
+  .page-count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);}
+
+  footer{padding:18px 0 28px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);text-align:center;}
+
+  @media (max-width:560px){
+    .terminal-body{padding:22px 18px 26px;min-height:auto;}
+    .avatar-frame{width:88px;height:88px;}
+    .controls{padding:14px 18px;}
+    .tabs{display:none;}
+    main{padding:20px 0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cursor{animation:none;}
+    .page.active{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="prompt">lionnel@portfolio<span class="path">:~$</span></div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap stage">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="terminal-title" id="terminalTitle">lionnel@portfolio — about.md</span>
+      </div>
+
+      <div class="terminal-body">
+
+        <!-- PAGE 1: ABOUT (shown first) -->
+        <section class="page active" data-title="about.md">
+          <p class="term-line"><span class="cmd">$</span> whoami<span class="cursor"></span></p>
+          <div class="hero-output">
+            <div class="avatar-frame">
+              <img src="profile.jpg" alt="Photo de Lionnel Carly Rajaonary">
+            </div>
+            <div class="hero-text">
+              <h1>RAJAONARY <span class="surname">Lionnel Carly</span></h1>
+              <p class="role"><span class="tag">&gt;</span> Développeur Full-Stack en formation · DTS2 @ AI&amp;Dev Academie</p>
+              <p class="bio">J'apprends à construire des choses utiles, de l'interface au serveur : sites web, applications et petits outils sur mesure. Actuellement en DTS2, je code en HTML, CSS, JavaScript, Python, Java, PHP et Node.js — et j'aime chaque langage pour ce qu'il résout le mieux.</p>
+              <div class="kv">
+                <div><span class="k">Formation</span><span class="v">DTS2 — AI&amp;Dev Academie</span></div>
+                <div><span class="k">Domaine</span><span class="v">Développement Full-Stack</span></div>
+                <div><span class="k">Disponibilité</span><span class="v">Projets freelance</span></div>
+                <div><span class="k">Localisation</span><span class="v">Madagascar</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 2: SKILLS -->
+        <section class="page" data-title="skills/">
+          <p class="term-line"><span class="cmd">$</span> ls skills/<span class="cursor"></span></p>
+          <h2 class="page-heading">Compétences</h2>
+          <div class="filetree">
+            <div class="file-row"><span class="ext html">HTML</span><span class="fname">markup.html</span><span class="flabel">structure des pages web</span></div>
+            <div class="file-row"><span class="ext css">CSS</span><span class="fname">style.css</span><span class="flabel">mise en forme &amp; responsive</span></div>
+            <div class="file-row"><span class="ext js">JS</span><span class="fname">script.js</span><span class="flabel">interactivité côté client</span></div>
+            <div class="file-row"><span class="ext py">PY</span><span class="fname">main.py</span><span class="flabel">scripts &amp; logique métier</span></div>
+            <div class="file-row"><span class="ext java">JAVA</span><span class="fname">Main.java</span><span class="flabel">programmation orientée objet</span></div>
+            <div class="file-row"><span class="ext php">PHP</span><span class="fname">index.php</span><span class="flabel">back-end web</span></div>
+            <div class="file-row"><span class="ext node">NODE</span><span class="fname">server.js</span><span class="flabel">API &amp; serveurs Node.js</span></div>
+            <div class="file-row"><span class="ext sql">SQL</span><span class="fname">database.sql</span><span class="flabel">modélisation &amp; requêtes</span></div>
+          </div>
+        </section>
+
+        <!-- PAGE 3: PROJECTS -->
+        <section class="page" data-title="projects/">
+          <p class="term-line"><span class="cmd">$</span> ls projects/<span class="cursor"></span></p>
+          <h2 class="page-heading">Projets</h2>
+          <div class="project-card">
+            <div class="ptop">
+              <h3>ASA</h3>
+              <span class="badge">freelance · local</span>
+            </div>
+            <p>Projet freelance réalisé pour un client local à Madagascar. Développement complet, de l'interface à la logique back-end, en autonomie — de la prise de besoin jusqu'à la mise en service.</p>
+            <div class="stack-row">
+              <span class="chip">HTML</span>
+              <span class="chip">CSS</span>
+              <span class="chip">JavaScript</span>
+              <span class="chip">PHP</span>
+              <span class="chip">SQL</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 4: CONTACT -->
+        <section class="page" data-title="contact.txt">
+          <p class="term-line"><span class="cmd">$</span> cat contact.txt<span class="cursor"></span></p>
+          <h2 class="page-heading">Contact</h2>
+          <div class="contact-grid">
+            <a class="contact-card" href="tel:+261348582516">
+              <span class="clabel">Téléphone</span>
+              <span class="cval">03 48 582 516</span>
+            </a>
+            <a class="contact-card" href="mailto:lionnelcarly12@gmail.com">
+              <span class="clabel">Email</span>
+              <span class="cval">lionnelcarly12@gmail.com</span>
+            </a>
+            <a class="contact-card" href="https://github.com/lionnelcarly12" target="_blank" rel="noopener">
+              <span class="clabel">GitHub</span>
+              <span class="cval">github.com/lionnelcarly12</span>
+            </a>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="controls">
+        <button class="navbtn prev" id="prevBtn">← Retour</button>
+        <span class="page-count" id="pageCount">1 / 4</span>
+        <button class="navbtn next" id="nextBtn">Suivant →</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 Lionnel Carly Rajaonary</footer>
+
+<script>
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const tabsEl = document.getElementById('tabs');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const pageCount = document.getElementById('pageCount');
+  const terminalTitle = document.getElementById('terminalTitle');
+  let current = 0;
+
+  // build tab indicators
+  pages.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-dot';
+    btn.textContent = p.dataset.title;
+    btn.addEventListener('click', () => goTo(i));
+    tabsEl.appendChild(btn);
+  });
+  const tabButtons = Array.from(tabsEl.children);
+
+  function render(){
+    pages.forEach((p, i) => p.classList.toggle('active', i === current));
+    tabButtons.forEach((b, i) => b.classList.toggle('active', i === current));
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === pages.length - 1;
+    nextBtn.textContent = current === pages.length - 1 ? 'Fin' : 'Suivant →';
+    pageCount.textContent = (current + 1) + ' / ' + pages.length;
+    terminalTitle.textContent = 'lionnel@portfolio — ' + pages[current].dataset.title;
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(pages.length - 1, i));
+    render();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => { if(current < pages.length - 1) goTo(current + 1); });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight') goTo(current + 1);
+    if(e.key === 'ArrowLeft') goTo(current - 1);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
